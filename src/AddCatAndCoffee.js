@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import axios from 'axios'
 
 const Coffeeinput = props => {
   return (
@@ -34,6 +35,15 @@ class CatCoffee extends React.Component {
         ...prevState.catcoffee,
         { categorie: prevState.inputCat, coffee: prevState.inputCoffee }
       ]
+      axios
+        .post(
+          'http://localhost:8080/coffeeRegistration/',
+          JSON.stringify({ copieCatCoffee })
+        )
+        .then(res => {
+          console.log(res)
+          console.log(res.data)
+        })
       return { CatCoffee: copieCatCoffee }
     })
   }
