@@ -1,7 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
+const List = props => {
+  return (
+    <div>
+      <ul>
+        <li> {props.name}/{props.categorie}</li>
+      </ul>
 
+    </div>
+  )
+}
 const Coffeeinput = props => {
   return (
     <div>
@@ -35,16 +44,7 @@ class CatCoffee extends React.Component {
         ...prevState.catcoffee,
         { categorie: prevState.inputCat, coffee: prevState.inputCoffee }
       ]
-      axios
-        .post(
-          'http://localhost:8080/coffeeRegistration/',
-          JSON.stringify({ copieCatCoffee })
-        )
-        .then(res => {
-          console.log(res)
-          console.log(res.data)
-        })
-      return { CatCoffee: copieCatCoffee }
+      return { catcoffee: copieCatCoffee }
     })
   }
 
@@ -109,6 +109,12 @@ class CatCoffee extends React.Component {
                 value={e}
               />
             )
+          })}
+        </div>
+        <div>
+
+          {this.state.catcoffee.map((e, i) => {
+            return <List categorie={e.categorie} name={e.coffee[0]} />
           })}
         </div>
       </div>
