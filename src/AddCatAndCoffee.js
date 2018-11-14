@@ -1,16 +1,32 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import axios from 'axios'
+import Select from 'react-select'
+
 const List = props => {
   return (
     <div>
       <ul>
-        <li> {props.name}/{props.categorie}</li>
+        <li> {props.name}/{props.price}/{props.power}</li>
       </ul>
 
     </div>
   )
 }
+
+const options = [
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+  { value: '6', label: '6' },
+  { value: '7', label: '7' },
+  { value: '8', label: '8' },
+  { value: '9', label: '9' },
+  { value: '10', label: '10' },
+  { value: '11', label: '11' },
+  { value: '12', label: '12' }
+]
+
 const Coffeeinput = props => {
   return (
     <div>
@@ -28,52 +44,114 @@ const Coffeeinput = props => {
   )
 }
 
+const CoffeeEntry = props => {
+  return (
+    <div>
+      <input
+        type='text'
+        onChange={props.onChangeCoffeeInput}
+        value={props.valueCoffee}
+      />
+      <input
+        type='text'
+        onChange={props.onChangePriceInput}
+        value={props.valuePrice}
+      />
+
+      <Select
+        options={options}
+        onChange={props.onChangePowerInput}
+        value={props.valuePower}
+      />
+
+      <input
+        type='button'
+        onClick={props.onDeleteCoffeeEntry}
+        value='Supprimer'
+      />
+    </div>
+  )
+}
+
 class CatCoffee extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      inputCat: '',
       inputCoffee: [''],
-      catcoffee: [{ categorie: '', coffee: [''] }]
+      inputPrice: [''],
+      inputPower: [''],
+      listCoffee: [{ nameCoffee: '', priceCoffee: '', powerCoffee: '' }]
     }
   }
 
-  onValidCatCoffee = () => {
+  onValidCatCoffeeFinal = () => {
     this.setState(prevState => {
-      const copieCatCoffee = [
-        ...prevState.catcoffee,
-        { categorie: prevState.inputCat, coffee: prevState.inputCoffee }
-      ]
-      return { catcoffee: copieCatCoffee }
+      var copieListCoffee = [...prevState.listCoffee]
+      for (var i = 0; i < prevState.inputCoffee.length; i++) {
+        copieListCoffee = [
+          ...copieListCoffee,
+          {
+            nameCoffee: prevState.inputCoffee[i],
+            priceCoffee: prevState.inputPrice[i],
+            powerCoffee: prevState.inputPower[i]
+          }
+        ]
+      }
+      return { listCoffee: copieListCoffee }
     })
   }
 
-  onChange = event => {
-    const value = event.target.value
-    this.setState(() => {
-      return { inputCat: value }
-    })
-  }
-
-  onAddCoffee = () => {
+  onAddNewCoffee = () => {
     this.setState(prevState => {
-      return { inputCoffee: [...prevState.inputCoffee, ''] }
+      return {
+        inputCoffee: [...prevState.inputCoffee, ''],
+        inputPrice: [...prevState.inputPrice, ''],
+        inputPower: [...prevState.inputPower, '']
+      }
     })
   }
 
-  onDeleteCoffeeInput = index => {
-    const copieTab = [...this.state.inputCoffee]
-    copieTab.splice(index, 1)
+  onDeleteCoffeeEntry = index => {
+    const copieTabCoffee = [...this.state.inputCoffee]
+    const copieTabPrice = [...this.state.inputPrice]
+    const copieTabPower = [...this.state.inputPower]
+    const copieListCoffee = [...this.state.listCoffee]
+
+    copieTabCoffee.splice(index, 1)
+    copieTabPrice.splice(index, 1)
+    copieTabPower.splice(index, 1)
+    copieListCoffee.splice(index, 1)
+
     this.setState({
-      inputCoffee: copieTab
+      inputCoffee: copieTabCoffee,
+      inputPower: copieTabPower,
+      inputPrice: copieTabPrice,
+      listCoffee: copieListCoffee
     })
   }
 
   onChangeCoffeeInput = (event, index) => {
     const value = event.target.value
-    const copieTab = [...this.state.inputCoffee]
+    this.setState(prevState => {
+      const copieTab = [...prevState.inputCoffee]
+      copieTab[index] = value
+      return { inputCoffee: copieTab }
+    })
+  }
+
+  onChangePriceInput = (event, index) => {
+    const value = event.target.value
+    const copieTab = [...this.state.inputPrice]
     copieTab[index] = value
-    this.setState({ inputCoffee: copieTab })
+    this.setState({ inputPrice: copieTab })
+  }
+
+  onChangePowerInput = (selectedOption, index) => {
+    this.setState(prevState => {
+      const copieTab = [...prevState.inputPower]
+      copieTab[index] = selectedOption
+      return { inputPower: copieTab }
+    })
   }
 
   render () {
@@ -81,42 +159,40 @@ class CatCoffee extends React.Component {
       <div>
         <div>
           <input
-            type='text'
-            onChange={this.onChange}
-            value={this.state.inputCat}
-          />
-          <input
             type='button'
-            onClick={this.onAddCoffee}
+            onClick={this.onAddNewCoffee}
             value='Ajouter Café'
           />
           <input
             type='button'
-            onClick={this.onValidCatCoffee}
+            onClick={this.onValidCatCoffeeFinal}
             value='Valider Saisie'
           />
         </div>
         <div>
           {this.state.inputCoffee.map((e, i) => {
             return (
-              <Coffeeinput
+              <CoffeeEntry
                 onChangeCoffeeInput={event => {
                   this.onChangeCoffeeInput(event, i)
                 }}
-                onDeleteCoffeeInput={() => {
-                  this.onDeleteCoffeeInput(i)
+                onChangePriceInput={event => {
+                  this.onChangePriceInput(event, i)
                 }}
-                value={e}
+                onChangePowerInput={selectedOption => {
+                  this.onChangePowerInput(selectedOption, i)
+                }}
+                onDeleteCoffeeEntry={() => {
+                  this.onDeleteCoffeeEntry(i)
+                }}
+                valueCoffee={e}
+                valuePrice={this.state.inputPrice[i]}
+                valuePower={this.state.inputPower[i]}
               />
             )
           })}
         </div>
-        <div>
-
-          {this.state.catcoffee.map((e, i) => {
-            return <List categorie={e.categorie} name={e.coffee[0]} />
-          })}
-        </div>
+        <div />
       </div>
     )
   }
